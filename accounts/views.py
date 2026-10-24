@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
-# Create your views here.
+from setup.models import Company
+from setup.services import is_setup_done
+
+
+def home(request):
+    if not is_setup_done():
+        return redirect("first_setup")
+    return render(request, "home.html", {"company": Company.objects.first()})
