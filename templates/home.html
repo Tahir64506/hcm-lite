@@ -1,7 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center">
-  <h1 class="h3">{{ company.name }}</h1>
-  <p class="text-muted">Setup is complete. Login comes next.</p>
+<h1 class="h3">{{ company.name }}</h1>
+<p class="text-muted">Signed in as <strong>{{ user.email }}</strong> ({{ user.get_role_display }}).</p>
+<div class="card">
+  <div class="card-body">
+    {% if user.role == "admin" %}
+      <p class="mb-0">Admin menu coming next: company settings, departments, leave types, holidays, HR logins, payroll finalization, audit log.</p>
+    {% elif user.role == "hr" %}
+      <p class="mb-0">HR menu coming next: employees, attendance board, leave approvals, payroll draft, announcements.</p>
+    {% else %}
+      <p class="mb-0">Employee menu coming next: check-in/out, my attendance, my leave, my payslips, my profile.</p>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

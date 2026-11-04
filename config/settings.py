@@ -58,6 +58,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "accounts.middleware.JWTAuthMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -146,3 +147,10 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
 ]
+# GitHub Codespaces
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".app.github.dev"]
+CSRF_TRUSTED_ORIGINS = ["https://*.app.github.dev"]
+
+# Auth
+JWT_EXPIRY_HOURS = 8
+LOGIN_URL = "/login/"
