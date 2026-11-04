@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · HCM Lite{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">{{ title }}</h1>
+<div class="row g-4">
+  <div class="{% if is_admin %}col-lg-8{% else %}col-12{% endif %}">
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+          <thead>
+            <tr>
+              {% for h in headers %}<th>{{ h }}</th>{% endfor %}
+              {% if is_admin %}<th></th>{% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for obj, values in rows %}
+              <tr>
+                {% for v in values %}<td>{{ v }}</td>{% endfor %}
+                {% if is_admin %}
+                <td class="text-end">
+                  <form method="post" action="{% url 'catalog_delete' key obj.pk %}" class="m-0"
+                        onsubmit="return confirm('Delete this item?');">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                  </form>
+                </td>
+                {% endif %}
+              </tr>
+            {% empty %}
+              <tr><td colspan="{{ colspan }}" class="text-muted text-center py-4">Nothing here yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% if is_admin %}
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h6">Add new</h2>
+        {% for e in form.non_field_errors %}<div class="alert alert-danger py-2">{{ e }}</div>{% endfor %}
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+          <button class="btn btn-primary w-100" type="submit">Add</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

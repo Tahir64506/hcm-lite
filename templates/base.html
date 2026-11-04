@@ -11,7 +11,24 @@
   <nav class="navbar navbar-expand bg-dark navbar-dark">
     <div class="container">
       <a class="navbar-brand" href="{% url 'home' %}">HCM Lite</a>
-      <div class="ms-auto d-flex align-items-center gap-3">
+      <ul class="navbar-nav me-auto">
+        {% if user.role == "admin" or user.role == "hr" %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Setup</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'company_settings' %}">Company settings</a></li>
+            <li><a class="dropdown-item" href="{% url 'catalog' 'departments' %}">Departments</a></li>
+            <li><a class="dropdown-item" href="{% url 'catalog' 'designations' %}">Designations</a></li>
+            <li><a class="dropdown-item" href="{% url 'catalog' 'leave-types' %}">Leave types</a></li>
+            <li><a class="dropdown-item" href="{% url 'catalog' 'holidays' %}">Public holidays</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        {% if user.role == "admin" %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'audit_log' %}">Audit log</a></li>
+        {% endif %}
+      </ul>
+      <div class="d-flex align-items-center gap-3">
         <span class="text-white-50 small">{{ user.first_name|default:user.email }}</span>
         <span class="badge text-bg-info text-uppercase">{{ user.role }}</span>
         <form method="post" action="{% url 'logout' %}" class="m-0">
@@ -22,8 +39,12 @@
     </div>
   </nav>
   {% endif %}
-  <div class="container py-5">
+  <div class="container py-4">
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} py-2">{{ message }}</div>
+    {% endfor %}
     {% block content %}{% endblock %}
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
