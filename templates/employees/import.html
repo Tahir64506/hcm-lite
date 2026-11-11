@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Import employees · HCM Lite{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Import employees from CSV</h1>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              {% if field.name == "dry_run" %}
+                <div class="form-check">{{ field }}<label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label></div>
+              {% else %}
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+              {% endif %}
+              {% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+          <button class="btn btn-primary w-100" type="submit">Check or import</button>
+        </form>
+        <hr>
+        <div class="small text-muted">
+          Required columns: <code>employee_code, name, email, department, designation, join_date, basic_salary</code><br>
+          Optional: <code>gender, phone, address, status</code> (probation or active)<br>
+          Dates use YYYY-MM-DD. Departments and designations must already exist. Maximum 500 rows. Nothing is imported unless every row is valid.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    {% if result %}
+      {% if result.fatal %}
+        <div class="alert alert-danger">{{ result.fatal }}</div>
+      {% elif error_count %}
+        <div class="alert alert-danger">
+          {{ error_count }} problem{{ error_count|pluralize }} found in {{ result.total }} row{{ result.total|pluralize }}. Nothing was imported.
+        </div>
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <thead><tr><th>Row</th><th>Field</th><th>Reason</th></tr></thead>
+              <tbody>
+                {% for row, field, reason in errors %}
+                  <tr><td>{{ row }}</td><td><code>{{ field }}</code></td><td>{{ reason }}</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% if error_count > 200 %}<div class="small text-muted mt-2">Showing the first 200 problems.</div>{% endif %}
+      {% elif dry_run %}
+        <div class="alert alert-success">All {{ result.total }} row{{ result.total|pluralize }} are valid. Untick "Dry run" and upload the file again to import.</div>
+      {% elif logins %}
+        <div class="alert alert-success">
+          Imported {{ logins|length }} employee{{ logins|length|pluralize }}.
+          Copy the temporary passwords now. They are shown only once, and each employee must change theirs at first sign-in.
+        </div>
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <thead><tr><th>Code</th><th>Name</th><th>Email</th><th>Temporary password</th></tr></thead>
+              <tbody>
+                {% for emp, temp in logins %}
+                  <tr><td>{{ emp.employee_code }}</td><td>{{ emp.name }}</td><td>{{ emp.user.email }}</td><td><code>{{ temp }}</code></td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

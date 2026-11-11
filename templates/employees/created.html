@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Employee registered · HCM Lite{% endblock %}
+{% block content %}
+<div class="alert alert-success">
+  <div class="fw-semibold">{{ employee.name }} ({{ employee.employee_code }}) was registered.</div>
+  {% if temp_password %}
+    <div class="mt-2">Login email: <code>{{ employee.user.email }}</code></div>
+    <div>Temporary password: <code class="fs-5">{{ temp_password }}</code></div>
+    <div class="small">Copy it now. It is shown only once, and the employee must change it at first sign-in.</div>
+  {% else %}
+    <div class="mt-2">Linked to the existing login <code>{{ employee.user.email }}</code>. No new password was created.</div>
+  {% endif %}
+</div>
+<a class="btn btn-primary btn-sm" href="{% url 'employee_detail' employee.pk %}">View profile</a>
+<a class="btn btn-outline-secondary btn-sm" href="{% url 'employee_new' %}">Register another</a>
+<a class="btn btn-outline-secondary btn-sm" href="{% url 'employee_list' %}">Back to directory</a>
+{% endblock %}

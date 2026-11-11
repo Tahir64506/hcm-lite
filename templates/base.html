@@ -13,6 +13,10 @@
       <a class="navbar-brand" href="{% url 'home' %}">HCM Lite</a>
       <ul class="navbar-nav me-auto">
         {% if user.role == "admin" or user.role == "hr" %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'employee_list' %}">Employees</a></li>
+        {% endif %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'my_profile' %}">My profile</a></li>
+        {% if user.role == "admin" or user.role == "hr" %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Setup</a>
           <ul class="dropdown-menu">

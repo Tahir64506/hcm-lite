@@ -1,0 +1,4 @@
+employee_code,name,email,department,designation,join_date,basic_salary
+EMP-0201,Test One,not-an-email,Engineering,Software Engineer,2026-01-15,50000
+EMP-0202,Test Two,test.two@saylanitech.com,Marketing,Software Engineer,15/01/2026,0
+EMP-0201,Test Three,test.three@saylanitech.com,Engineering,Software Engineer,2026-01-15,50000

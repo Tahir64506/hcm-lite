@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}My profile · HCM Lite{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">My profile</h1>
+<div class="alert alert-info">
+  There is no employee profile linked to your account.
+  {% if user.role == "hr" %}Register yourself under Employees and choose your login in "Link an existing HR login".{% endif %}
+</div>
+{% endblock %}

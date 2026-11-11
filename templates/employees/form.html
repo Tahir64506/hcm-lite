@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{% if is_edit %}Edit employee{% else %}Register employee{% endif %} · HCM Lite{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">{% if is_edit %}Edit employee{% else %}Register employee{% endif %}</h1>
+<div class="card">
+  <div class="card-body p-4">
+    {% for e in form.non_field_errors %}<div class="alert alert-danger py-2">{{ e }}</div>{% endfor %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="row">
+        {% for field in form %}
+          <div class="{% if field.name == 'address' or field.name == 'existing_user' %}col-12{% else %}col-md-6{% endif %} mb-3">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+            {% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+      <button class="btn btn-primary" type="submit">{% if is_edit %}Save changes{% else %}Register employee{% endif %}</button>
+      <a class="btn btn-outline-secondary" href="{% if employee %}{% url 'employee_detail' employee.pk %}{% else %}{% url 'employee_list' %}{% endif %}">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

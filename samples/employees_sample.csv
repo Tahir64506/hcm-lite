@@ -1,0 +1,4 @@
+employee_code,name,email,department,designation,join_date,basic_salary,gender,phone,address,status
+EMP-0101,Ayesha Khan,ayesha.khan@saylanitech.com,Engineering,Software Engineer,2026-01-15,85000,female,+92 300 1234567,Karachi,active
+EMP-0102,Bilal Ahmed,bilal.ahmed@saylanitech.com,Sales,Sales Manager,2026-02-01,95000,male,+92 321 7654321,Lahore,probation
+EMP-0103,Hina Malik,hina.malik@saylanitech.com,Human Resources,HR Executive,2026-03-10,70000,female,,Islamabad,active
