@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Users · HCM Lite{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Users</h1>
+
+{% if new_login %}
+<div class="alert alert-success">
+  <div class="fw-semibold">Login {{ new_login.action }} for {{ new_login.email }}</div>
+  <div>Temporary password: <code class="fs-5">{{ new_login.password }}</code></div>
+  <div class="small">Copy it now. It is shown only once, and the user must change it at first sign-in.</div>
+</div>
+{% endif %}
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <form method="get" class="row g-2 mb-3">
+      <div class="col-md-5">
+        <input name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Search name or email">
+      </div>
+      <div class="col-md-3">
+        <select name="role" class="form-select form-select-sm">
+          <option value="">All roles</option>
+          {% for value, label in roles %}
+            <option value="{{ value }}" {% if value == role %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="status" class="form-select form-select-sm">
+          <option value="">Any status</option>
+          <option value="active" {% if status == "active" %}selected{% endif %}>Active</option>
+          <option value="inactive" {% if status == "inactive" %}selected{% endif %}>Inactive</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-outline-secondary btn-sm w-100" type="submit">Filter</button>
+      </div>
+    </form>
+
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for u in page %}
+              <tr>
+                <td>{{ u.first_name|default:"-" }}</td>
+                <td>{{ u.email }}</td>
+                <td><span class="badge text-bg-secondary">{{ u.get_role_display }}</span></td>
+                <td>
+                  {% if u.is_active %}<span class="badge text-bg-success">Active</span>
+                  {% else %}<span class="badge text-bg-danger">Inactive</span>{% endif %}
+                </td>
+                <td class="text-end text-nowrap">
+                  {% if u.pk == user.pk %}
+                    <span class="text-muted small">You</span>
+                  {% else %}
+                    <form method="post" action="{% url 'user_reset' u.pk %}" class="d-inline"
+                          onsubmit="return confirm('Reset the password for this user?');">
+                      {% csrf_token %}
+                      <button class="btn btn-outline-secondary btn-sm" type="submit">Reset password</button>
+                    </form>
+                    <form method="post" action="{% url 'user_toggle' u.pk %}" class="d-inline">
+                      {% csrf_token %}
+                      <button class="btn btn-sm {% if u.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}" type="submit">
+                        {% if u.is_active %}Deactivate{% else %}Activate{% endif %}
+                      </button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="5" class="text-center text-muted py-4">No users found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 align-items-center mt-3">
+      {% if page.has_previous %}
+        <a class="btn btn-outline-secondary btn-sm"
+           href="?page={{ page.previous_page_number }}&q={{ q|urlencode }}&role={{ role }}&status={{ status }}">Previous</a>
+      {% endif %}
+      <span class="small text-muted">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}
+        <a class="btn btn-outline-secondary btn-sm"
+           href="?page={{ page.next_page_number }}&q={{ q|urlencode }}&role={{ role }}&status={{ status }}">Next</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h6">Create HR login</h2>
+        <form method="post" action="{% url 'users' %}">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+          <button class="btn btn-primary w-100" type="submit">Create HR login</button>
+        </form>
+        <p class="text-muted small mt-3 mb-0">Employee logins are created when HR registers an employee.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
