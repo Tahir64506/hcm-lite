@@ -4,6 +4,7 @@ from django.urls import path
 from accounts import user_views
 from accounts import views as account_views
 from audit import views as audit_views
+from attendance import views as attendance_views
 from employees import views as employee_views
 from setup import views as setup_views
 
@@ -23,6 +24,9 @@ urlpatterns = [
     path("employees/<int:pk>/", employee_views.employee_detail, name="employee_detail"),
     path("employees/<int:pk>/edit/", employee_views.employee_edit, name="employee_edit"),
     path("profile/", employee_views.my_profile, name="my_profile"),
+    path("attendance/", attendance_views.my_attendance, name="my_attendance"),
+    path("attendance/check-in/", attendance_views.check_in, name="check_in"),
+    path("attendance/check-out/", attendance_views.check_out, name="check_out"),
     path("settings/", setup_views.company_settings, name="company_settings"),
     path("settings/<str:key>/", setup_views.catalog, name="catalog"),
     path("settings/<str:key>/<int:pk>/delete/", setup_views.catalog_delete, name="catalog_delete"),

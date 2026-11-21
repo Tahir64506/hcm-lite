@@ -16,6 +16,9 @@
         <li class="nav-item"><a class="nav-link" href="{% url 'employee_list' %}">Employees</a></li>
         {% endif %}
         <li class="nav-item"><a class="nav-link" href="{% url 'my_profile' %}">My profile</a></li>
+        {% if user.role == "hr" or user.role == "employee" %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'my_attendance' %}">Attendance</a></li>
+        {% endif %}
         {% if user.role == "admin" or user.role == "hr" %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Setup</a>
