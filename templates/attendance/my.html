@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Attendance · HCM Lite{% endblock %}
 {% block content %}
-<h1 class="h4 mb-3">My attendance</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">My attendance</h1>
+  <a class="btn btn-outline-primary btn-sm" href="{% url 'my_calendar' %}">My calendar</a>
+</div>
 
 {% if not employee %}
   <div class="alert alert-info">

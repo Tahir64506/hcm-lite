@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Attendance calendar · HCM Lite{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-0">{{ emp.name }}</h1>
+    <div class="text-muted">{{ emp.employee_code }} · {{ emp.department.name }}</div>
+  </div>
+  <a class="btn btn-outline-secondary btn-sm" href="{% url 'employee_detail' emp.pk %}">Profile</a>
+</div>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+  {% if prev_month %}
+    <a class="btn btn-outline-secondary btn-sm" href="?month={{ prev_month }}">&laquo; Previous</a>
+  {% else %}
+    <span class="btn btn-outline-secondary btn-sm disabled">&laquo; Previous</span>
+  {% endif %}
+  <div class="fw-semibold px-2">{{ month_label }}</div>
+  {% if next_month %}
+    <a class="btn btn-outline-secondary btn-sm" href="?month={{ next_month }}">Next &raquo;</a>
+  {% else %}
+    <span class="btn btn-outline-secondary btn-sm disabled">Next &raquo;</span>
+  {% endif %}
+</div>
+
+<div class="card mb-3">
+  <div class="table-responsive">
+    <table class="table table-bordered mb-0" style="table-layout: fixed; min-width: 700px">
+      <thead class="table-light">
+        <tr>{% for d in weekdays %}<th class="text-center small">{{ d }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for week in weeks %}
+          <tr>
+            {% for cell in week %}
+              {% if cell %}
+                <td class="p-2 {% if cell.is_today %}bg-primary-subtle{% elif cell.status == 'weekend' or cell.status == 'holiday' %}table-light{% endif %}"
+                    style="height: 96px; vertical-align: top">
+                  <div class="small text-muted">{{ cell.date.day }}</div>
+                  {% if cell.label %}<span class="badge {{ cell.badge }}">{{ cell.label }}</span>{% endif %}
+                  {% if cell.record %}
+                    <div class="small text-muted mt-1">
+                      {{ cell.record.check_in|time:"H:i" }}{% if cell.record.check_out %} - {{ cell.record.check_out|time:"H:i" }}{% endif %}
+                    </div>
+                  {% endif %}
+                  {% if cell.holiday %}<div class="small text-muted">{{ cell.holiday }}</div>{% endif %}
+                </td>
+              {% else %}
+                <td class="bg-light"></td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div>
+  {% for label, badge, count in summary %}
+    <span class="badge {{ badge }} me-1">{{ label }}: {{ count }}</span>
+  {% empty %}
+    <span class="text-muted small">Nothing to summarise for this month.</span>
+  {% endfor %}
+</div>
+{% endblock %}

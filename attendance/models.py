@@ -38,16 +38,19 @@ class Attendance(models.Model):
             models.UniqueConstraint(fields=["employee", "work_date"], name="one_record_per_employee_per_day"),
         ]
 
-    @property
-    def status(self):
+    def status_on(self, today):
         """Priority: missing_checkout, half_day, late, present."""
         if self.check_out is None:
-            if self.work_date < timezone.localdate():
+            if self.work_date < today:
                 return "missing_checkout"
             return "late" if self.is_late else "present"
         if self.is_half_day:
             return "half_day"
         return "late" if self.is_late else "present"
+
+    @property
+    def status(self):
+        return self.status_on(timezone.localdate())
 
     @property
     def status_label(self):

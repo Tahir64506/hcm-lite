@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Daily board · HCM Lite{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Daily attendance board</h1>
+{% if notice %}<div class="alert alert-warning py-2">{{ notice }}</div>{% endif %}
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-3">
+    <input type="date" name="date" value="{{ day|date:'Y-m-d' }}" max="{{ today|date:'Y-m-d' }}"
+           class="form-control form-control-sm">
+  </div>
+  <div class="col-md-3">
+    <select name="department" class="form-select form-select-sm">
+      <option value="">All departments</option>
+      {% for d in departments %}
+        <option value="{{ d.pk }}" {% if d.pk|stringformat:"s" == department %}selected{% endif %}>{{ d.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <select name="status" class="form-select form-select-sm">
+      <option value="">Any status</option>
+      {% for key, label in statuses %}
+        <option value="{{ key }}" {% if key == status %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-outline-secondary btn-sm w-100" type="submit">Show</button>
+  </div>
+</form>
+
+<div class="mb-3">
+  <span class="fw-semibold">{{ day|date:"l, d F Y" }}</span>
+  {% if is_weekend %}<span class="badge text-bg-light border ms-2">Weekend</span>{% endif %}
+  {% if holiday_name %}<span class="badge text-bg-secondary ms-2">Holiday: {{ holiday_name }}</span>{% endif %}
+  <span class="text-muted small ms-2">{{ total }} employee{{ total|pluralize }}</span>
+</div>
+
+<div class="row g-2 mb-3">
+  {% for key, label, badge, count in cards %}
+    <div class="col-6 col-md">
+      <a href="?{{ base_qs }}&status={{ key }}" class="text-decoration-none">
+        <div class="card text-center {% if key == status %}border-primary{% endif %}">
+          <div class="card-body py-2">
+            <div class="fs-4 text-body">{{ count }}</div>
+            <div class="small text-muted">{{ label }}</div>
+          </div>
+        </div>
+      </a>
+    </div>
+  {% endfor %}
+</div>
+{% if status %}<div class="mb-2"><a class="small" href="?{{ base_qs }}">Clear status filter</a></div>{% endif %}
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0 align-middle">
+      <thead>
+        <tr><th>Code</th><th>Name</th><th>Department</th><th>Check-in</th><th>Check-out</th><th>Worked</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for r in page %}
+          <tr>
+            <td>{{ r.employee.employee_code }}</td>
+            <td><a href="{% url 'attendance_calendar' r.employee.pk %}">{{ r.employee.name }}</a></td>
+            <td>{{ r.employee.department.name }}</td>
+            <td>{% if r.record %}{{ r.record.check_in|time:"H:i" }}{% else %}-{% endif %}</td>
+            <td>{% if r.record and r.record.check_out %}{{ r.record.check_out|time:"H:i" }}{% else %}-{% endif %}</td>
+            <td>{% if r.record %}{{ r.record.worked_display }}{% else %}-{% endif %}</td>
+            <td>{% if r.label %}<span class="badge {{ r.badge }}">{{ r.label }}</span>{% endif %}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" class="text-center text-muted py-4">No employees to show.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="d-flex gap-2 align-items-center mt-3">
+  {% if page.has_previous %}
+    <a class="btn btn-outline-secondary btn-sm" href="?page={{ page.previous_page_number }}&{{ qs }}">Previous</a>
+  {% endif %}
+  <span class="small text-muted">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}
+    <a class="btn btn-outline-secondary btn-sm" href="?page={{ page.next_page_number }}&{{ qs }}">Next</a>
+  {% endif %}
+</div>
+{% endblock %}

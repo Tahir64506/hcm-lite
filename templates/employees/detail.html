@@ -71,7 +71,8 @@
   </div>
 </div>
 
-<p class="text-muted small mt-4">Attendance, leave and payslip summaries will appear here as those modules are added.</p>
+<a class="btn btn-outline-primary btn-sm mt-4" href="{% url 'attendance_calendar' emp.pk %}">Attendance calendar</a>
+<p class="text-muted small mt-2">Leave and payslip summaries will appear here as those modules are added.</p>
 
 {% if history %}
 <h2 class="h6 mt-4">Recent changes</h2>
