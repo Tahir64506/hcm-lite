@@ -3,6 +3,7 @@ import datetime
 from collections import Counter
 
 from employees.models import Employee
+from leave.models import LeaveRequest
 from setup.models import Company, Holiday
 
 from .models import Attendance
@@ -40,8 +41,25 @@ SUMMARY_ORDER = ["present", "late", "half_day", "missing_checkout", "absent", "o
 
 
 def approved_leave_days(employee_ids, start, end):
-    """Employee id -> set of approved leave dates. The Leave module will fill this in."""
-    return {}
+    """Employee id -> set of dates covered by APPROVED leave inside [start, end]."""
+    found = {}
+    ids = list(employee_ids)
+    if not ids:
+        return found
+    requests = LeaveRequest.objects.filter(
+        employee_id__in=ids,
+        status=LeaveRequest.Status.APPROVED,
+        start_date__lte=end,
+        end_date__gte=start,
+    )
+    for item in requests:
+        day = max(item.start_date, start)
+        last = min(item.end_date, end)
+        dates = found.setdefault(item.employee_id, set())
+        while day <= last:
+            dates.add(day)
+            day += datetime.timedelta(days=1)
+    return found
 
 
 def _settings_for(start, end):

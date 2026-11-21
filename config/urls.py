@@ -7,6 +7,7 @@ from audit import views as audit_views
 from attendance import views as attendance_views
 from attendance import correction_views
 from employees import views as employee_views
+from leave import views as leave_views
 from setup import views as setup_views
 
 urlpatterns = [
@@ -35,6 +36,10 @@ urlpatterns = [
     path("attendance/corrections/review/", correction_views.review, name="correction_review"),
     path("attendance/corrections/<int:pk>/decide/", correction_views.decide, name="correction_decide"),
     path("attendance/corrections/<int:pk>/cancel/", correction_views.cancel, name="correction_cancel"),
+    path("leave/", leave_views.my_leave, name="my_leave"),
+    path("leave/review/", leave_views.review, name="leave_review"),
+    path("leave/<int:pk>/decide/", leave_views.decide, name="leave_decide"),
+    path("leave/<int:pk>/cancel/", leave_views.cancel, name="leave_cancel"),
     path("settings/", setup_views.company_settings, name="company_settings"),
     path("settings/<str:key>/", setup_views.catalog, name="catalog"),
     path("settings/<str:key>/<int:pk>/delete/", setup_views.catalog_delete, name="catalog_delete"),

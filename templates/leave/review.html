@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Review leave · HCM Lite{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Leave requests
+    {% if pending_count %}<span class="badge text-bg-warning fs-6">{{ pending_count }} pending</span>{% endif %}
+  </h1>
+  <form method="get" class="d-flex gap-2 m-0">
+    <select name="status" class="form-select form-select-sm">
+      <option value="">All</option>
+      {% for value, label in statuses %}
+        <option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-secondary btn-sm" type="submit">Filter</button>
+  </form>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Employee</th><th>Type</th><th>Dates</th><th class="text-end">Days</th>
+          <th>Reason</th><th>Balance left</th><th>Status</th><th style="min-width: 240px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td>
+              <a href="{% url 'attendance_calendar' r.employee.pk %}">{{ r.employee.name }}</a>
+              <div class="text-muted small">{{ r.employee.employee_code }}</div>
+            </td>
+            <td>{{ r.leave_type.name }}</td>
+            <td class="text-nowrap">
+              {{ r.start_date|date:"d M Y" }}{% if r.end_date != r.start_date %} - {{ r.end_date|date:"d M Y" }}{% endif %}
+            </td>
+            <td class="text-end">{{ r.days }}</td>
+            <td class="small">{{ r.reason }}</td>
+            <td class="text-nowrap small">
+              {% if r.balance.remaining is None %}Unlimited{% else %}{{ r.balance.remaining }} of {{ r.balance.quota }}{% endif %}
+            </td>
+            <td>
+              <span class="badge {{ r.badge }}">{{ r.get_status_display }}</span>
+              {% if r.decided_by %}<div class="small text-muted">by {{ r.decided_by.first_name|default:r.decided_by.email }}</div>{% endif %}
+              {% if r.hr_comment %}<div class="small text-muted">{{ r.hr_comment }}</div>{% endif %}
+            </td>
+            <td>
+              {% if r.status == "pending" %}
+                {% if can_decide %}
+                  <form method="post" action="{% url 'leave_decide' r.pk %}" class="m-0">
+                    {% csrf_token %}
+                    <input name="comment" maxlength="500" class="form-control form-control-sm mb-1"
+                           placeholder="Comment (required to reject)">
+                    <button name="decision" value="approve" class="btn btn-success btn-sm" type="submit">Approve</button>
+                    <button name="decision" value="reject" class="btn btn-outline-danger btn-sm" type="submit">Reject</button>
+                  </form>
+                {% else %}
+                  <span class="text-muted small">View only</span>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8" class="text-center text-muted py-4">No requests found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="d-flex gap-2 align-items-center mt-3">
+  {% if page.has_previous %}
+    <a class="btn btn-outline-secondary btn-sm" href="?status={{ status }}&page={{ page.previous_page_number }}">Previous</a>
+  {% endif %}
+  <span class="small text-muted">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}
+    <a class="btn btn-outline-secondary btn-sm" href="?status={{ status }}&page={{ page.next_page_number }}">Next</a>
+  {% endif %}
+</div>
+{% endblock %}
