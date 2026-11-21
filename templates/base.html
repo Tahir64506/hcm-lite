@@ -18,9 +18,11 @@
         <li class="nav-item"><a class="nav-link" href="{% url 'my_profile' %}">My profile</a></li>
         {% if user.role == "admin" or user.role == "hr" %}
         <li class="nav-item"><a class="nav-link" href="{% url 'attendance_board' %}">Daily board</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'correction_review' %}">Review corrections</a></li>
         {% endif %}
         {% if user.role == "hr" or user.role == "employee" %}
         <li class="nav-item"><a class="nav-link" href="{% url 'my_attendance' %}">Attendance</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'my_corrections' %}">Corrections</a></li>
         {% endif %}
         {% if user.role == "admin" or user.role == "hr" %}
         <li class="nav-item dropdown">

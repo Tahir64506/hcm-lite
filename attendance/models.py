@@ -69,3 +69,46 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.employee.employee_code} {self.work_date}"
+
+
+class CorrectionRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+        CANCELLED = "cancelled", "Cancelled"
+
+    employee = models.ForeignKey(Employee, on_delete=models.PROTECT, related_name="corrections")
+    work_date = models.DateField()
+    check_in_time = models.TimeField()
+    check_out_time = models.TimeField(null=True, blank=True)
+    reason = models.TextField(max_length=500)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    hr_comment = models.TextField(max_length=500, blank=True)
+    decided_by = models.ForeignKey(
+        "accounts.User", null=True, blank=True, on_delete=models.PROTECT, related_name="+"
+    )
+    decided_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["employee", "work_date"],
+                condition=models.Q(status="pending"),
+                name="one_pending_correction_per_day",
+            ),
+        ]
+
+    @property
+    def badge(self):
+        return {
+            "pending": "text-bg-warning",
+            "approved": "text-bg-success",
+            "rejected": "text-bg-danger",
+            "cancelled": "text-bg-secondary",
+        }[self.status]
+
+    def __str__(self):
+        return f"{self.employee.employee_code} {self.work_date} {self.status}"

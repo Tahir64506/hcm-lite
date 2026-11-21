@@ -5,6 +5,7 @@ from accounts import user_views
 from accounts import views as account_views
 from audit import views as audit_views
 from attendance import views as attendance_views
+from attendance import correction_views
 from employees import views as employee_views
 from setup import views as setup_views
 
@@ -30,6 +31,10 @@ urlpatterns = [
     path("attendance/board/", attendance_views.board, name="attendance_board"),
     path("attendance/calendar/", attendance_views.my_calendar, name="my_calendar"),
     path("attendance/calendar/<int:pk>/", attendance_views.calendar_view, name="attendance_calendar"),
+    path("attendance/corrections/", correction_views.my_corrections, name="my_corrections"),
+    path("attendance/corrections/review/", correction_views.review, name="correction_review"),
+    path("attendance/corrections/<int:pk>/decide/", correction_views.decide, name="correction_decide"),
+    path("attendance/corrections/<int:pk>/cancel/", correction_views.cancel, name="correction_cancel"),
     path("settings/", setup_views.company_settings, name="company_settings"),
     path("settings/<str:key>/", setup_views.catalog, name="catalog"),
     path("settings/<str:key>/<int:pk>/delete/", setup_views.catalog_delete, name="catalog_delete"),

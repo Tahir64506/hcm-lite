@@ -1,5 +1,5 @@
 from django.contrib import admin
 
-from .models import Attendance
+from .models import Attendance, CorrectionRequest
 
-admin.site.register(Attendance)
+admin.site.register([Attendance, CorrectionRequest])
